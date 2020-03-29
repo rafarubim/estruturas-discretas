@@ -1,0 +1,213 @@
+Trabalho 1 / Estruturas Discretas
+
+Questao 1
+
+O algoritmo para determinar o quociente entre (x^(k) - y^(k)) e (x - y), dados x, y e k inteiros, deve se basear primeiramente no calculo do quociente para casos simples do teorema. E, a partir da analise desses casos, observar um padrao para o calculo do quociente. Dessa forma, visto que o quociente de um novo valor de k, sempre depende do quociente do k anterior (k - 1) e possivel afirmar que se conseguimos calcular o quociente para k = 1, então conseguimos calcular o quociente para k = 2 a partir de k = 1 e o quociente para k = 3 a partir do quociente de k = 2, e assim por diante. Portanto, o algoritmo sera capaz de calcular, para qualquer valor de k, o quociente da divisao a partir de um caso base.
+
+Esse teorema, pode ser então escrito através de uma prova por indução, composta por um teorema do caso base (TCB) e um teorema do passo indutivo (TPI).
+
+Prova por Inducao:
+
+T(n): x^(n) - y^(n) = (x - y)*q_(n)
+      n >= 0
+      
+T(k): x^(k) - y^(k) = (x - y)*q_(k)
+
+TCB: k = 1
+     x - y = (x - y)*q_(1)
+     q_(1) = 1
+
+TPI: T(k) -> T(k + 1)
+     T(k + 1): x^(k + 1) - y^(k + 1) = (x - y)*q_(k + 1)
+     x^(k + 1) - x^(k)*y + x^(k)*y - y^(k + 1) = (x - y)*q_(k + 1)
+     x^(k)(x - y) + y*(x^(k) - y^(k)) = (x - y)*q_(k + 1)
+     x^(k) + y*(x^(k) - y^(k)) / (x - y) = q_(k + 1)
+     x^(k) + y*q_(k) = q_(k + 1)
+
+O teorema do caso base define o ponto onde podememos comecar a calcular os quocientes para a divisão. E, o teorema do passo indutivo garante que é possível encontrar um quociente para k + 1 em funcao dos quocientes anteriores, cobrindo todos os casos para calculos de quocientes a partir do quociente do caso base.
+Dessa forma, o teorema do passo indutivo define a parte recursiva do algoritmo para calcular o quociente e, o teorema do caso base define a condicao de parada da recursao.
+
+Algoritmo:
+
+def ObterQuociente(x, y, k):
+    if (k == 1):
+        return 1
+    qk = x**(k - 1) + y * ObterQuociente(x, y, k - 1)
+    return qk
+    
+Testes de Execucao:
+    
+    Dados:  x = 3
+            y = 1
+            k = 2
+    Numero de execucoes: 1329979
+                         1339193
+                         1355177
+                         1364212
+    Media do numero de execucoes: 1347140.2
+            
+    Dados:  x = 10
+            y = 7
+            k = 20
+    Numero de execucoes: 213162
+                         215357
+                         214887
+                         207414
+    Media do numero de execucoes: 212705
+    
+    Dados:  x = 530
+            y = 378
+            k = 100
+    Numero de execucoes: 28512
+                         28659
+                         28382
+                         28630
+    Media do numero de execucoes: 28545
+
+Questao 3
+
+Admitindo N = 2^(k - 1) para o problema.
+
+Segundo o teorema proposto, e possivel construir para N equipes, sendo N uma potencia de 2, todos os jogos e rodadas de um campeonato, no qual todos jogam contra todos e cada equipe enfrenta uma equipe diferente a cada rodada.
+
+Prova por Inducao:
+
+T(n): 2^(n) - 1 rodadas
+      2^(n - 1) jogos
+      n >= 1
+      
+T(k): 2^(k) - 1 rodadas
+      2^(k - 1) jogos 
+
+TCB: k = 1
+     2^(1) - 1 = 1 rodada
+     2^(1 - 1) = 1 jogo
+     [(1, 2)]
+     
+TPI: T(k)-> T(k + 1)
+     2^(k + 1) - 1 = 2^(k) * 2 - 1 rodadas
+     2^(k) jogos
+     
+     O numero de rodadas e o numero de jogos obedecem a regras especificas dependendo do numero de equipes para o qual se deseja      criar tais rodadas e jogos.
+     Sabendo que, para N equipes conseguimos construir todas as rodadas e os jogos de cada rodada, então conseguimos juntar os  jogos de N equipes com os jogos de N equipes novas em N - 1 rodadas para 2N equipes. Desse modo, ficam faltando N rodadas para construir. Essas rodadas podem ser construidas combinando cada uma das N equipes com cada equipe das N equipes novas, de modo que nenhuma das equipes apareca duas vezes em uma mesma rodada.
+     
+     k - 1 = 1
+     2^(k - 1) = 2 equipes
+     2^(k - 1) - 1 = 1 rodada
+     2^(k - 2) = 1 jogo
+     
+     Equipes: 1,2
+     Rodada 1: [(1,2)]
+     
+     Equipes: 3,4
+     Rodada 1: [(3,4)]
+     
+     k = 2
+     2^(k) = 4 equipes
+     2^(k) - 1 = 3 rodadas
+     2^(k - 1) = 2 jogos
+     
+     Equipes: 1,2,3,4
+     Rodada 1: [(1,2),(3,4)]
+     Rodada 2: [(1,3),(2,4)]
+     Rodada 3: [(1,4),(2,3)]
+    
+     Sendo assim, podemos concluir que todos os jogos possiveis entre as equipes podem ser construidos atraves da combinacao do numero de equipes duas a duas e, esses jogos podem ser distribuidos em rodadas de modo que cada equipe apareca exatamente uma vez em cada rodada. Dessa forma, se podemos construir todas as rodadas e jogos para um caso base de equipes, então podemos construir também todas as rodadas e jogos para quaisquer N equipes.
+     
+O algoritmo para construir todas as rodadas e jogos para um numero N de equipes, pode então ser definido utilizando-se um caso base de equipes com todos os jogos e rodadas completas e, a partir desse caso sabe, definir um passo indutivo que permite afirmar que se o teorema e possivel para N = 2 equipes, por exemplo, entao ele e possivel para todos os valores de N >= 2.
+Como possuimos uma estrutura de jogos dentro de cada rodada, uam boa representacao para a estrutura do campeonato e uma matriz, cujas linhas representam as rodadas e as colunas representam os jogos. Alem disso, cada elemento da matriz e composto de dois numeros que inidicam quais equipes estao naquele jogo.
+
+Algoritmo:
+
+def mudarNumEqDup(rodada):
+    qtdJogos = len(rodada)
+    qtdEquipes = qtdJogos * 2
+    
+    novaRodada = rodada[:]
+    for i in range(qtdJogos):
+        novaRodada[i] = rodada[i][:]
+    
+    for i in range(qtdJogos):
+        jogo = novaRodada[i]
+        jogo[0] += qtdEquipes
+        jogo[1] += qtdEquipes
+    return novaRodada
+
+def equipes(k):
+    numEq = 2**k
+    
+    if (k <= 1):
+        return [[[1, 2]]]
+    
+    matrizRodadas = []
+    
+    rodadasAntes = equipes(k - 1)
+    
+    for i in range(len(rodadasAntes)):
+        rodadasEsq = rodadasAntes[i]
+        rodadasDir = mudarNumEqDup(rodadasAntes[i])
+        matrizRodadas.append(rodadasEsq + rodadasDir)
+        
+    todasEquipes = range(1, numEq + 1)
+    
+    numNovasRodadas = numEq / 2
+    numNovasRodadas=int(numNovasRodadas)
+    
+    novasRodadas = []
+    for j in range(numNovasRodadas):
+        rodada = []
+        for i in range(numNovasRodadas):
+            rodada.append([todasEquipes[i], todasEquipes[numNovasRodadas + ((i+j) % numNovasRodadas)]])
+        novasRodadas.append(rodada)
+    
+    for i in range(len(novasRodadas)):
+        matrizRodadas.append(novasRodadas[i])
+    
+    return matrizRodadas
+
+Testes de Execucao:
+    
+    Dados: 4 equipes (k = 2)
+    Numero de execucoes: 289514
+                         307847
+                         311990
+                         306958
+    Media do numero de execucoes: 304077.25
+    
+    Dados: 32 equipes (k = 5)
+    Numero de execucoes: 7805
+                         7357
+                         8734
+                         8478
+    Media do numero de execucoes: 8093.5
+    
+    Dados: 1024 equipes (k = 10)
+    Numero de execucoes: 3
+                         4
+                         7
+                         6
+    Media do numero de execucoes: 5
+
+    Dados: 4096 equipes (k = 12)
+    Numero de execucoes: 1
+    Media do numero de execucoes: 1
+    Tempo de execucao: 63.336972591729136 s
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
